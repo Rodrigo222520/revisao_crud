@@ -1,21 +1,23 @@
 <?php
 
+include '../SQL/db.sql';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $nome = $_POST['nome'];
     $email = $_POST['email'];
 
-    $sql = " INSERT INTO usuarios (nome,email,senha) VALUE ('$nome','$email')";   
+    $sql = " INSERT INTO usuario (nome,email) VALUE ('$nome','$email')";   
 
         if ($conn->query($sql) === true) {
             echo "<div class='mensagemErro'> 
-        <p>Novo Funcionário registrado com sucesso.</p>
+        <p>Novo usuário registrado com sucesso.</p>
         <a href='cadastrarFuncionario.php' class='fechar'>Fechar</a>
             </div>";
         } else {
             echo "<div class='mensagemErro'> 
         <p>Erro</p>
-        <a href='cadastrarFuncionario.php' class='fechar'>Fechar</a>
+        <a href='' class='fechar'>Fechar</a>
             </div>" . $sql . '<br>' . $conn->error;
         }
     $conn->close();
@@ -69,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 $valido = true;
                             }
                         }
-                    ?>  
+                        ?>
+                    <label class="error" id="errorEmail"></label>  
                 </div>
             </form>
         </div>  
