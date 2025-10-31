@@ -1,0 +1,31 @@
+body{
+    background-color: chartreuse;
+    color: black;
+}
+
+.centro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+}
+
+#quadrado{
+    background-color: black;
+    width: 255px;
+}
+
+.flex{
+    border: none;
+    border-bottom: solid 2px #2f4858;
+    width: 97%;
+    margin: 1%;
+    font-size: 20px;
+    padding-top: 10px;
+}
+
+.footerCentral{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
