@@ -20,7 +20,7 @@ CREATE TABLE tarefas (
 
 INSERT INTO usuario (nome, email) VALUES
 ('Carla Souza', 'carla.souza@alimentos.com'),
-('Rodrigo Felippe', 'rodrigo.felippe@aliemtnos.com'),
+('Rodrigo Felippe', 'rodrigo.felippe@alimentos.com'),
 ('Daniel Melo', 'daniel.melo@alimentos.com');
 
 INSERT INTO tarefas (idUsuario, nomeSetor, descricao, dataCadastro, status, prioridade) VALUES
