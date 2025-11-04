@@ -4,7 +4,8 @@ USE industria_alimenticia_db;
 CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE tarefas (
@@ -18,10 +19,10 @@ CREATE TABLE tarefas (
     prioridade ENUM ('baixa', 'media', 'grande')NOT NULL
 );
 
-INSERT INTO usuario (nome, email) VALUES
-('Carla Souza', 'carla.souza@alimentos.com'),
-('Rodrigo Felippe', 'rodrigo.felippe@alimentos.com'),
-('Daniel Melo', 'daniel.melo@alimentos.com');
+INSERT INTO usuario (nome, email, senha) VALUES
+('Carla Souza', 'carla.souza@alimentos.com', '$2y$10$examplehashedpassword1'),
+('Rodrigo Felippe', 'rodrigo.felippe@alimentos.com', '$2y$10$examplehashedpassword2'),
+('Daniel Melo', 'daniel.melo@alimentos.com', '$2y$10$examplehashedpassword3');
 
 INSERT INTO tarefas (idUsuario, nomeSetor, descricao, dataCadastro, status, prioridade) VALUES
 (1, 'Produção', 'Verificar o estoque de farinha para o lote 123.', '2025-12-20', 'fazer', 'media'),

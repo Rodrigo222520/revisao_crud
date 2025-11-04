@@ -1,5 +1,5 @@
 body{
-    background-color: chartreuse;
+    background-color: white;
     color: black;
 }
 
@@ -11,7 +11,7 @@ body{
 }
 
 #quadrado{
-    background-color: black;
+    background-color: white;
     width: 255px;
 }
 
