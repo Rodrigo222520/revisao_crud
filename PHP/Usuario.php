@@ -9,16 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $nome = trim($_POST['nome'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $senha = trim($_POST['senha'] ?? '');
 
     if (empty($nome)) {
         $errors['nome'] = 'Preencha o nome de forma correta.';
     }
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Preencha o email de forma correta.';
-    }
-    if (empty($senha) || strlen($senha) < 6) {
-        $errors['senha'] = 'A senha deve ter pelo menos 6 caracteres.';
     }
 
     if (empty($errors)) {
@@ -29,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param('sss', $nome, $email, $senha_hash);
             if ($stmt->execute()) {
                 $success = 'Novo usuário registrado com sucesso.';
-                $nome = $email = $senha = '';
+                $nome = $email = '';
             } else {
                 $errors['database'] = 'Erro ao registrar usuário: ' . $stmt->error;
             }
@@ -60,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main class="centro">
         <div>
             <h1>Cadastrar Usuário</h1>
-            <a href="Tarefas.php">Gerenciar Tarefas</a> | <a href="Kanban.php">Visualizar Kanban</a> | <a href="login.php">Login</a>
             <?php if ($success): ?>
                 <div class="mensagemSucesso">
                     <p><?php echo htmlspecialchars($success); ?></p>
@@ -89,14 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endif; ?>
                     <label class="error" id="errorEmail"></label>
 
-                    <input type="password" class="flex" name="senha" placeholder="Senha">
-                    <?php if (!empty($errors['senha'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['senha']); ?></p></div>
-                    <?php endif; ?>
-                    <label class="error" id="errorSenha"></label>
                 </div>
-
-                <div class="Cadastrar">
+                
+                <br>
+                <div class="centro">
                     <button type="submit"><h2>Cadastrar</h2></button>
                 </div>
             </form>

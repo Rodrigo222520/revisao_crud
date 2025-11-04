@@ -73,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main class="centro">
         <div>
             <h1>Gerenciar Tarefas</h1>
-            <a href="Kanban.php">Visualizar Kanban</a> | <a href="Usuario.php">Cadastrar Usuário</a> | <a href="login.php">Login</a>
 
             <?php if ($success): ?>
                 <div class="mensagemSucesso">
@@ -91,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <form id="validarCadastroUsuario" action="" method="POST">
                 <div id="quadrado">
-                    <label for="idUsuario">Usuário</label>
+                    <label for="idUsuario"></label>
                     <select name="idUsuario" class="flex">
                         <option value="" <?php echo (isset($idUsuario) && $idUsuario === '') ? 'selected' : ''; ?>>Selecione um usuário</option>
                         <?php
@@ -132,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endif; ?>
                     <label class="error" id="errorCadastro"></label>
 
-                    <label for="status">Status</label>
+                    <label for="status"></label>
                     <select name="status" class="flex">
                         <option value="none" <?php echo (isset($status) && $status === 'none') ? 'selected' : ''; ?>>Status</option>
                         <option value="fazer" <?php echo (isset($status) && $status === 'fazer') ? 'selected' : ''; ?>>Fazer</option>
@@ -143,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="error"><p><?php echo htmlspecialchars($errors['status']); ?></p></div>
                     <?php endif; ?>
 
-                    <label for="prioridade">Prioridade</label>
+                    <label for="prioridade"></label>
                     <select name="prioridade" class="flex">
                         <option value="none" <?php echo (isset($prioridade) && $prioridade === 'none') ? 'selected' : ''; ?>>Prioridade</option>
                         <option value="baixa" <?php echo (isset($prioridade) && $prioridade === 'baixa') ? 'selected' : ''; ?>>Baixa</option>
@@ -155,8 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endif; ?>
 
                 </div>
-
-                <div style="margin-top:1rem;">
+                
+                <br>
+                <div class="centro">
                     <button type="submit" class="btnSubmit"><h2>Inserir tarefa</h2></button>
                 </div>
 

@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email'] ?? '');
     $senha = trim($_POST['senha'] ?? '');
 
-    // Validações
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Preencha o email de forma correta.';
     }
@@ -53,11 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-<a href="../PHP/Tarefas.php">Gerenciar tarefas</a>
     <main class="centro">
         <div>
             <h1>Login</h1>
-            <a href="Tarefas.php">Gerenciar Tarefas</a> | <a href="Kanban.php">Visualizar Kanban</a> | <a href="Usuario.php">Cadastrar Usuário</a>
+            <a href="Tarefas.php">Gerenciar Tarefas</a>
             <?php if ($success): ?>
                 <div class="mensagemSucesso">
                     <p><?php echo htmlspecialchars($success); ?></p>
@@ -87,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label class="error" id="errorSenha"></label>
                 </div>
 
+                <br>
                 <div class="centro">
                     <button type="submit" class="btnSubmit"><h2>Cadastrar</h2></button>
                 </div>
