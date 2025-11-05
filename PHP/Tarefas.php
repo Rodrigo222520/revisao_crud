@@ -1,9 +1,21 @@
 <?php
-
 include 'db.php';
 
-$errors = [];
-$success = '';
+if (isset($_GET['delete'])) {
+    $idDelete = intval($_GET['delete']);
+    $conn->query("DELETE FROM tarefas WHERE id = $idDelete");
+    header('Location: Tarefas.php');
+    exit;
+}
+
+$editData = null;
+if (isset($_GET['edit'])) {
+    $idEdit = intval($_GET['edit']);
+    $result = $conn->query("SELECT * FROM tarefas WHERE id = $idEdit");
+    if ($result && $result->num_rows > 0) {
+        $editData = $result->fetch_assoc();
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $idUsuario = $_POST['idUsuario'] ?? '';
@@ -12,158 +24,102 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $dataCadastro = trim($_POST['dataCadastro'] ?? '');
     $status = $_POST['status'] ?? 'none';
     $prioridade = $_POST['prioridade'] ?? 'none';
+    $idTarefa = $_POST['idTarefa'] ?? '';
 
-    if ($idUsuario === '') {
-        $errors['idUsuario'] = 'Selecione um usuário.';
+    if ($idTarefa) {
+        $stmt = $conn->prepare("UPDATE tarefas SET idUsuario=?, nomeSetor=?, descricao=?, dataCadastro=?, status=?, prioridade=? WHERE id=?");
+        $stmt->bind_param('isssssi', $idUsuario, $nomeSetor, $descricao, $dataCadastro, $status, $prioridade, $idTarefa);
+        $stmt->execute();
+        $stmt->close();
+    } else {
+        $stmt = $conn->prepare("INSERT INTO tarefas (idUsuario, nomeSetor, descricao, dataCadastro, status, prioridade) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('isssss', $idUsuario, $nomeSetor, $descricao, $dataCadastro, $status, $prioridade);
+        $stmt->execute();
+        $stmt->close();
     }
-    if ($nomeSetor === '') {
-        $errors['nomeSetor'] = 'Preencha o setor de forma correta.';
-    }
-    if ($descricao === '') {
-        $errors['descricao'] = 'Preencha a descrição de forma correta.';
-    }
-    if ($dataCadastro === '') {
-        $errors['dataCadastro'] = 'Preencha a data de cadastro de forma correta.';
-    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataCadastro)) {
-        $errors['dataCadastro'] = 'Data deve estar no formato YYYY-MM-DD.';
-    }
-    if ($status === 'none') {
-        $errors['status'] = 'Preencha o status de forma correta.';
-    }
-    if ($prioridade === 'none') {
-        $errors['prioridade'] = 'Preencha a prioridade de forma correta.';
-    }
-
-    if (count($errors) === 0) {
-        $stmt = $conn->prepare("INSERT INTO tarefas (idUsuario,nomeSetor,descricao,dataCadastro,status,prioridade) VALUES (?, ?, ?, ?, ?, ?)");
-        if ($stmt) {
-            $stmt->bind_param('isssss', $idUsuario, $nomeSetor, $descricao, $dataCadastro, $status, $prioridade);
-            if ($stmt->execute()) {
-                $success = 'Nova tarefa registrada com sucesso.';
-                $idUsuario = $nomeSetor = $descricao = $dataCadastro = '';
-                $status = 'none';
-                $prioridade = 'none';
-            } else {
-                $errors['database'] = 'Erro ao executar a inserção: ' . $stmt->error;
-            }
-            $stmt->close();
-        } else {
-            $errors['database'] = 'Erro na preparação da query: ' . $conn->error;
-        }
-    }
-
-    $conn->close();
+    header('Location: Tarefas.php');
+    exit;
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../../assets/logos/logoPequena.png">
-    <link rel="stylesheet" href="../style/style.css">
-    <title>Gerenciar Tarefas</title>
+    <link rel="stylesheet" href="../Style/style.css">
+    <title>Lista de Tarefas</title>
 </head>
-
 <body>
-
     <main class="centro">
-        <div>
-            <h1>Gerenciar Tarefas</h1>
-
-            <?php if ($success): ?>
-                <div class="mensagemSucesso">
-                    <p><?php echo htmlspecialchars($success); ?></p>
-                    <a href="" class="fechar">Fechar</a>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($errors) && isset($errors['database'])): ?>
-                <div class="mensagemErro">
-                    <p><?php echo htmlspecialchars($errors['database']); ?></p>
-                    <a href="" class="fechar">Fechar</a>
-                </div>
-            <?php endif; ?>
-
-            <form id="validarCadastroUsuario" action="" method="POST">
-                <div id="quadrado">
-                    <label for="idUsuario"></label>
-                    <select name="idUsuario" class="flex">
-                        <option value="" <?php echo (isset($idUsuario) && $idUsuario === '') ? 'selected' : ''; ?>>Selecione um usuário</option>
-                        <?php
-                        $conn_select = new mysqli($servername, $username, $password, $dbname);
-                        if ($conn_select->connect_error) {
-                            die("Conexao falhou: " . $conn_select->connect_error);
-                        }
-                        $result = $conn_select->query("SELECT id, nome FROM usuario");
-                        if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
-                                $selected = (isset($idUsuario) && $idUsuario == $row['id']) ? 'selected' : '';
-                                echo "<option value='" . $row['id'] . "' $selected>" . htmlspecialchars($row['nome']) . "</option>";
-                            }
-                        }
-                        $conn_select->close();
-                        ?>
-                    </select>
-                    <?php if (!empty($errors['idUsuario'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['idUsuario']); ?></p></div>
-                    <?php endif; ?>
-                    <label class="error" id="errorUsuario"></label>
-
-                    <input type="text" class="flex" name="nomeSetor" placeholder="Nome do setor" value="<?php echo isset($nomeSetor) ? htmlspecialchars($nomeSetor) : ''; ?>">
-                    <?php if (!empty($errors['nomeSetor'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['nomeSetor']); ?></p></div>
-                    <?php endif; ?>
-                    <label class="error" id="errorSetor"></label>
-
-                    <input type="text" class="flex" name="descricao" placeholder="Descrição" value="<?php echo isset($descricao) ? htmlspecialchars($descricao) : ''; ?>">
-                    <?php if (!empty($errors['descricao'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['descricao']); ?></p></div>
-                    <?php endif; ?>
-                    <label class="error" id="errorDescricao"></label>
-
-                    <input type="date" class="flex" name="dataCadastro" value="<?php echo isset($dataCadastro) ? htmlspecialchars($dataCadastro) : ''; ?>">
-                    <?php if (!empty($errors['dataCadastro'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['dataCadastro']); ?></p></div>
-                    <?php endif; ?>
-                    <label class="error" id="errorCadastro"></label>
-
-                    <label for="status"></label>
-                    <select name="status" class="flex">
-                        <option value="none" <?php echo (isset($status) && $status === 'none') ? 'selected' : ''; ?>>Status</option>
-                        <option value="fazer" <?php echo (isset($status) && $status === 'fazer') ? 'selected' : ''; ?>>Fazer</option>
-                        <option value="feito" <?php echo (isset($status) && $status === 'feito') ? 'selected' : ''; ?>>Feito</option>
-                        <option value="pronto" <?php echo (isset($status) && $status === 'pronto') ? 'selected' : ''; ?>>Pronto</option>
-                    </select>
-                    <?php if (!empty($errors['status'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['status']); ?></p></div>
-                    <?php endif; ?>
-
-                    <label for="prioridade"></label>
-                    <select name="prioridade" class="flex">
-                        <option value="none" <?php echo (isset($prioridade) && $prioridade === 'none') ? 'selected' : ''; ?>>Prioridade</option>
-                        <option value="baixa" <?php echo (isset($prioridade) && $prioridade === 'baixa') ? 'selected' : ''; ?>>Baixa</option>
-                        <option value="media" <?php echo (isset($prioridade) && $prioridade === 'media') ? 'selected' : ''; ?>>Média</option>
-                        <option value="grande" <?php echo (isset($prioridade) && $prioridade === 'grande') ? 'selected' : ''; ?>>Alta</option>
-                    </select>
-                    <?php if (!empty($errors['prioridade'])): ?>
-                        <div class="error"><p><?php echo htmlspecialchars($errors['prioridade']); ?></p></div>
-                    <?php endif; ?>
-
-                </div>
-                
-                <br>
-                <div class="centro">
-                    <button type="submit" class="btnSubmit"><h2>Inserir tarefa</h2></button>
-                </div>
-
-            </form>
-        </div>
+        <h1>Lista de Tarefas</h1>
+        <a href="Tarefas.php" class="btnAdd">Nova Tarefa</a>
+        <form action="Tarefas.php" method="POST" style="margin-top:20px;">
+            <input type="hidden" name="idTarefa" value="<?= $editData ? $editData['id'] : '' ?>">
+            <select name="idUsuario" required>
+                <option value="">Selecione um usuário</option>
+                <?php
+                $usuarios = $conn->query("SELECT id, nome FROM usuario");
+                while ($u = $usuarios->fetch_assoc()) {
+                    $selected = $editData && $editData['idUsuario'] == $u['id'] ? 'selected' : '';
+                    echo "<option value='{$u['id']}' $selected>{$u['nome']}</option>";
+                }
+                ?>
+            </select>
+            <input type="text" name="nomeSetor" placeholder="Setor" value="<?= $editData ? htmlspecialchars($editData['nomeSetor']) : '' ?>" required>
+            <input type="text" name="descricao" placeholder="Descrição" value="<?= $editData ? htmlspecialchars($editData['descricao']) : '' ?>" required>
+            <input type="date" name="dataCadastro" value="<?= $editData ? htmlspecialchars($editData['dataCadastro']) : '' ?>" required>
+            <select name="status" required>
+                <option value="fazer" <?= $editData && $editData['status']=='fazer' ? 'selected' : '' ?>>Fazer</option>
+                <option value="feito" <?= $editData && $editData['status']=='feito' ? 'selected' : '' ?>>Feito</option>
+                <option value="pronto" <?= $editData && $editData['status']=='pronto' ? 'selected' : '' ?>>Pronto</option>
+            </select>
+            <select name="prioridade" required>
+                <option value="baixa" <?= $editData && $editData['prioridade']=='baixa' ? 'selected' : '' ?>>Baixa</option>
+                <option value="media" <?= $editData && $editData['prioridade']=='media' ? 'selected' : '' ?>>Média</option>
+                <option value="grande" <?= $editData && $editData['prioridade']=='grande' ? 'selected' : '' ?>>Alta</option>
+            </select>
+            <button type="submit" class="btnAdd">Salvar</button>
+        </form>
+        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse; margin-top:30px;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Setor</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Prioridade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $sql = "SELECT t.id, u.nome as usuario_nome, t.nomeSetor, t.descricao, t.dataCadastro, t.status, t.prioridade FROM tarefas t JOIN usuario u ON t.idUsuario = u.id ORDER BY t.dataCadastro DESC";
+                $result = $conn->query($sql);
+                if ($result && $result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<tr>';
+                        echo '<td>' . $row['id'] . '</td>';
+                        echo '<td>' . htmlspecialchars($row['usuario_nome']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['nomeSetor']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['descricao']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['dataCadastro']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['status']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['prioridade']) . '</td>';
+                        echo '<td>';
+                        echo '<a href="Tarefas.php?edit=' . $row['id'] . '" class="btnEdit">Editar</a> ';
+                        echo '<a href="Tarefas.php?delete=' . $row['id'] . '" class="btnDelete" onclick="return confirm(\'Tem certeza que deseja excluir esta tarefa?\');">Excluir</a>';
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="8" style="text-align:center; color:#aaa;">Nenhuma tarefa encontrada</td></tr>';
+                }
+                ?>
+            </tbody>
+        </table>
     </main>
-
 </body>
-<br>
 </html>
