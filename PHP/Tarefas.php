@@ -51,9 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Lista de Tarefas</title>
 </head>
 <body>
-    <main class="centro">
+    <div class="centro">
         <h1>Lista de Tarefas</h1>
+    </div>
+    <div class="centro">
         <a href="Tarefas.php" class="btnAdd">Nova Tarefa</a>
+    </div>
+    <main class="centro">
         <form action="Tarefas.php" method="POST" style="margin-top:20px;">
             <input type="hidden" name="idTarefa" value="<?= $editData ? $editData['id'] : '' ?>">
             <select name="idUsuario" required>
@@ -79,47 +83,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <option value="media" <?= $editData && $editData['prioridade']=='media' ? 'selected' : '' ?>>Média</option>
                 <option value="grande" <?= $editData && $editData['prioridade']=='grande' ? 'selected' : '' ?>>Alta</option>
             </select>
-            <button type="submit" class="btnAdd">Salvar</button>
-        </form>
-        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse; margin-top:30px;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>Setor</th>
-                    <th>Descrição</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Prioridade</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $sql = "SELECT t.id, u.nome as usuario_nome, t.nomeSetor, t.descricao, t.dataCadastro, t.status, t.prioridade FROM tarefas t JOIN usuario u ON t.idUsuario = u.id ORDER BY t.dataCadastro DESC";
-                $result = $conn->query($sql);
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo '<tr>';
-                        echo '<td>' . $row['id'] . '</td>';
-                        echo '<td>' . htmlspecialchars($row['usuario_nome']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['nomeSetor']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['descricao']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['dataCadastro']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['status']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['prioridade']) . '</td>';
-                        echo '<td>';
-                        echo '<a href="Tarefas.php?edit=' . $row['id'] . '" class="btnEdit">Editar</a> ';
-                        echo '<a href="Tarefas.php?delete=' . $row['id'] . '" class="btnDelete" onclick="return confirm(\'Tem certeza que deseja excluir esta tarefa?\');">Excluir</a>';
-                        echo '</td>';
-                        echo '</tr>';
-                    }
-                } else {
-                    echo '<tr><td colspan="8" style="text-align:center; color:#aaa;">Nenhuma tarefa encontrada</td></tr>';
-                }
-                ?>
-            </tbody>
-        </table>
+        </form>  
     </main>
 </body>
 </html>
+
+<br>
+<div class="centro">
+    <button type="submit" class="btnAdd">Salvar</button>
+</div>
+
+<table border="1" cellpadding="8" style="width:100%; border-collapse:collapse; margin-top:30px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Setor</th>
+            <th>Descrição</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Prioridade</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $sql = "SELECT t.id, u.nome as usuario_nome, t.nomeSetor, t.descricao, t.dataCadastro, t.status, t.prioridade FROM tarefas t JOIN usuario u ON t.idUsuario = u.id ORDER BY t.dataCadastro DESC";
+        $result = $conn->query($sql);
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo '<tr>';
+                    echo '<td>' . $row['id'] . '</td>';
+                    echo '<td>' . htmlspecialchars($row['usuario_nome']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['nomeSetor']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['descricao']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['dataCadastro']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['status']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['prioridade']) . '</td>';
+                    echo '<td>';
+                    echo '<a href="Tarefas.php?edit=' . $row['id'] . '" class="btnEdit">Editar</a> ';
+                    echo '<a href="Tarefas.php?delete=' . $row['id'] . '" class="btnDelete" onclick="return confirm(\'Tem certeza que deseja excluir esta tarefa?\');">Excluir</a>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+            } else {
+                echo '<tr><td colspan="8" style="text-align:center; color:#aaa;">Nenhuma tarefa encontrada</td></tr>';
+            }
+        ?>
+    </tbody>
+</table>
