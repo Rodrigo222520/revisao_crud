@@ -1,6 +1,7 @@
 <?php
 
 include 'db.php';
+include 'api.php';
 
 $errors = [];
 $success = '';
@@ -24,7 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt) {
             $stmt->bind_param('ss', $email, $senha_hash);
             if ($stmt->execute()) {
+                $userId = $conn->insert_id;
                 $success = 'Novo usuário cadastrado com sucesso.';
+                // Tenta notificar API externa; não impede o cadastro se falhar
+                $apiResp = send_user_registration($email, $userId);
+                if (!$apiResp['ok']) {
+                    $errors['api'] = 'Aviso: falha ao notificar API externa.';
+                }
                 $email = $senha = '';
             } else {
                 $errors['database'] = 'Erro ao cadastrar usuário: ' . $stmt->error;

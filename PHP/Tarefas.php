@@ -1,6 +1,7 @@
 <?php
 
 include 'db.php';
+include 'api.php';
 
 $errors = [];
 $success = '';
@@ -40,6 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param('isssss', $idUsuario, $nomeSetor, $descricao, $dataCadastro, $status, $prioridade);
             if ($stmt->execute()) {
                 $success = 'Nova tarefa registrada com sucesso.';
+                $task = [
+                    'id' => $conn->insert_id,
+                    'idUsuario' => $idUsuario,
+                    'nomeSetor' => $nomeSetor,
+                    'descricao' => $descricao,
+                    'dataCadastro' => $dataCadastro,
+                    'status' => $status,
+                    'prioridade' => $prioridade,
+                ];
+                $apiResp = send_task_created($task);
+                if (!$apiResp['ok']) {
+                    $errors['api'] = 'Aviso: falha ao notificar API externa.';
+                }
                 $idUsuario = $nomeSetor = $descricao = $dataCadastro = '';
                 $status = 'none';
                 $prioridade = 'none';
