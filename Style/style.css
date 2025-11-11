@@ -29,3 +29,53 @@ body{
     justify-content: center;
     align-items: center;
 }
+
+    
+.kanban-board { 
+    display: flex; gap: 20px; justify-content: center; 
+}
+
+.kanban-column { 
+    background: #f4f4f4; border-radius: 8px; padding: 16px; width: 300px; 
+}
+
+.kanban-column h2 { 
+    text-align: center; 
+}
+
+.kanban-card { 
+    background: #fff; border-radius: 6px; box-shadow: 0 2px 6px #ccc; margin-bottom: 12px; padding: 12px; 
+}
+
+.prioridade-baixa { 
+    border-left: 6px solid #4caf50; 
+}
+
+.prioridade-media { 
+    border-left: 6px solid #ff9800; 
+}
+
+.prioridade-grande { 
+    border-left: 6px solid #f44336; 
+}
+
+.kanban-card strong { 
+    display: block; margin-bottom: 4px; 
+}
+
+  
+.btnEdit, .btnDelete, .btnAdd { 
+    padding: 6px 12px; border-radius: 5px; text-decoration: none; margin: 2px; 
+}
+
+.btnEdit { 
+    background: #2196f3; color: #fff; 
+}
+
+.btnDelete { 
+    background: #f44336; color: #fff; 
+}
+
+.btnAdd { 
+    background: #4caf50; color: #fff; font-weight: bold; 
+}
